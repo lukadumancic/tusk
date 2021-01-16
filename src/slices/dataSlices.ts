@@ -16,6 +16,8 @@ const dataKeys = [
 
 const dataInitialState: any = {
   selectedCompanyId: -1,
+  selectedTeamId: -1,
+  selectedProjectId: -1,
 };
 const reducers: any = {};
 const extraReducers: any = {};
@@ -50,13 +52,23 @@ const dataSlice = createSlice({
     setSelectedCompanyId(state: any, action: PayloadAction<number>) {
       state.selectedCompanyId = action.payload;
     },
+    setSelectedTeamId(state: any, action: PayloadAction<number>) {
+      state.selectedTeamId = action.payload;
+    },
+    setSelectedProjectId(state: any, action: PayloadAction<number>) {
+      state.selectedProjectId = action.payload;
+    },
   },
   extraReducers: {
     ...extraReducers,
   },
 });
 
-export const { setSelectedCompanyId } = dataSlice.actions;
+export const {
+  setSelectedCompanyId,
+  setSelectedTeamId,
+  setSelectedProjectId,
+} = dataSlice.actions;
 export default dataSlice.reducer;
 
 dataKeys.forEach((key) => {
@@ -76,10 +88,10 @@ export const getData = createAsyncThunk("getData", async (_, { dispatch }) => {
   });
 });
 
-export const createNewCompany = createAsyncThunk(
-  "createNewCompany",
-  async (name: string, { dispatch }) => {
-    await apiService.post("/companies", { name });
+export const createNew = createAsyncThunk(
+  "createNew",
+  async ({ route, data }: { route: string; data: any }, { dispatch }) => {
+    await apiService.post(route, data);
 
     dispatch(getData());
   }
@@ -96,7 +108,7 @@ export const deleteItem = createAsyncThunk(
 
 export const editItem = createAsyncThunk(
   "editItem",
-  async ({route, data}: {route: string; data: any}, { dispatch }) => {
+  async ({ route, data }: { route: string; data: any }, { dispatch }) => {
     await apiService.put(route, data);
 
     dispatch(getData());

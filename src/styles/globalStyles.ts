@@ -35,6 +35,13 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "left",
   },
+  itemSubtext: {
+    color: "#DDD",
+    flex: 1,
+    width: "100%",
+    textAlign: "left",
+    fontSize: 8,
+  },
   input: {
     marginTop: 12,
     flexDirection: "row",

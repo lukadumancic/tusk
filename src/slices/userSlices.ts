@@ -42,6 +42,5 @@ export const registerUser = createAsyncThunk(
   "registerUser",
   async (userData: any, { dispatch }) => {
     const data = await apiService.post("/users", userData);
-    console.log(data);
   }
 );

@@ -5,7 +5,7 @@ import styles from "../styles/globalStyles";
 
 import { dataSelector } from "../selectors";
 import {
-  createNewCompany,
+  createNew,
   deleteItem,
   editItem,
   getData,
@@ -22,7 +22,9 @@ export default function Companies() {
   };
 
   const createCompany = () => {
-    dispatch(createNewCompany(newCompanyName));
+    dispatch(
+      createNew({ route: "/companies", data: { name: newCompanyName } })
+    );
     setNewCompanyName("");
   };
 
@@ -87,7 +89,7 @@ export default function Companies() {
             onChangeText={(text) => setNewCompanyName(text)}
           />
           <Pressable style={styles.inputButton} onPress={createCompany}>
-            Create
+            <Text style={{ color: "#FFF" }}>Create</Text>
           </Pressable>
         </View>
       </ScrollView>
