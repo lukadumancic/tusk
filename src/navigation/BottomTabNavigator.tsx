@@ -2,7 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import { useSelector } from "react-redux";
+import { Pressable } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { View } from "../components/Themed";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -13,12 +15,14 @@ import Register from "../screens/Register";
 import Sprints from "../screens/Sprints";
 import Teams from "../screens/Teams";
 import { userSelector } from "../selectors";
+import { logoutUser } from "../slices/userSlices";
 
 const BottomTab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
   const userState = useSelector(userSelector);
+  const dispatch = useDispatch();
 
   if (userState.isLoggedIn) {
     return (
@@ -31,7 +35,7 @@ export default function BottomTabNavigator() {
           component={Companies}
           options={{
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="ios-code" color={color} />
+              <TabBarIcon name="people" color={color} />
             ),
           }}
         />
@@ -40,7 +44,7 @@ export default function BottomTabNavigator() {
           component={Teams}
           options={{
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="ios-code" color={color} />
+              <TabBarIcon name="ios-person" color={color} />
             ),
           }}
         />
@@ -48,9 +52,7 @@ export default function BottomTabNavigator() {
           name="Projects"
           component={Projects}
           options={{
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="ios-code" color={color} />
-            ),
+            tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
           }}
         />
         <BottomTab.Screen
@@ -58,7 +60,22 @@ export default function BottomTabNavigator() {
           component={Sprints}
           options={{
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="ios-code" color={color} />
+              <TabBarIcon name="md-newspaper" color={color} />
+            ),
+          }}
+        />
+        <BottomTab.Screen
+          name="Logout"
+          component={View}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <Pressable
+                onPress={() => {
+                  dispatch(logoutUser());
+                }}
+              >
+                <TabBarIcon name="log-out" color={color} />
+              </Pressable>
             ),
           }}
         />
@@ -74,9 +91,7 @@ export default function BottomTabNavigator() {
         name="Login"
         component={LoginNavigator}
         options={{
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="log-in" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="log-in" color={color} />,
         }}
       />
       <BottomTab.Screen

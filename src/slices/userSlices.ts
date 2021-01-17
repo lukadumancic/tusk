@@ -32,8 +32,10 @@ const userSlice = createSlice({
   name: "user",
   initialState: userInitialState,
   reducers: {
+    logoutUser(state) {
+      state.isLoggedIn = false;
+    },
     setUserData(state, action: PayloadAction<any>) {
-      console.log(action);
       state = {
         ...state,
         ...action.payload,
@@ -44,7 +46,7 @@ const userSlice = createSlice({
     [loginUser.fulfilled]: (state, action) => {
       state.token = action.payload.token;
       state.isLoggedIn = true;
-      state.errorLog = '';
+      state.errorLog = "";
     },
     [loginUser.rejected]: (state, action) => {
       state.errorLog = "Wrong username or password";
@@ -53,7 +55,7 @@ const userSlice = createSlice({
       state = {
         ...state,
         ...action.payload,
-        errorReg: ''
+        errorReg: "",
       };
     },
     [registerUser.rejected]: (state, action) => {
@@ -62,5 +64,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserData } = userSlice.actions;
+export const { setUserData, logoutUser } = userSlice.actions;
 export default userSlice.reducer;

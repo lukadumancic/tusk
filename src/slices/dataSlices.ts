@@ -12,6 +12,7 @@ const dataKeys = [
   "tags",
   "tasks",
   "teams",
+  "users",
 ];
 
 const dataInitialState: any = {
@@ -19,6 +20,7 @@ const dataInitialState: any = {
   selectedTeamId: -1,
   selectedProjectId: -1,
   selectedSprintId: -1,
+  teamMembers: {},
 };
 const reducers: any = {};
 const extraReducers: any = {};
@@ -62,6 +64,9 @@ const dataSlice = createSlice({
     setSelectedSprintId(state: any, action: PayloadAction<number>) {
       state.selectedSprintId = action.payload;
     },
+    setTeamMembers(state: any, action: PayloadAction<any>) {
+      state.teamMembers[action.payload.teamId] = action.payload.members;
+    },
   },
   extraReducers: {
     ...extraReducers,
@@ -73,6 +78,7 @@ export const {
   setSelectedTeamId,
   setSelectedProjectId,
   setSelectedSprintId,
+  setTeamMembers,
 } = dataSlice.actions;
 export default dataSlice.reducer;
 
@@ -117,6 +123,14 @@ export const editItem = createAsyncThunk(
     await apiService.put(route, data);
 
     dispatch(getData());
+  }
+);
+
+export const getTeamMembers = createAsyncThunk(
+  "getTeamMembers",
+  async (teamId: number, { dispatch }) => {
+    const data = await apiService.get("/teams/" + teamId + "/members");
+    dispatch(setTeamMembers({ teamId, members: data }));
   }
 );
 
