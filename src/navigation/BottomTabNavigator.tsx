@@ -75,7 +75,7 @@ export default function BottomTabNavigator() {
         component={LoginNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <TabBarIcon name="log-in" color={color} />
           ),
         }}
       />
@@ -84,7 +84,7 @@ export default function BottomTabNavigator() {
         component={RegisterNavigation}
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
+            <TabBarIcon name="create-sharp" color={color} />
           ),
         }}
       />

@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
@@ -7,6 +9,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 12,
     paddingTop: 8,
+    marginLeft: width > 600 ? width / 2 - 300 : 0,
+    maxWidth: 600,
   },
   title: {
     fontSize: 20,
@@ -49,6 +53,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   inputText: {
+    paddingLeft: 8,
     flex: 3,
     color: "#3e82f0",
     borderRadius: 8,
@@ -63,6 +68,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#3e82f0",
     justifyContent: "center",
     alignItems: "center",
+  },
+  centeredView: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
 

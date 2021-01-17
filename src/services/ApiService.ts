@@ -4,7 +4,6 @@ export class ApiService {
   baseUrl: string;
   constructor() {
     this.baseUrl =
-      "https://cors-anywhere.herokuapp.com/" +
       "http://ec2-3-122-254-0.eu-central-1.compute.amazonaws.com:5000/api";
   }
 

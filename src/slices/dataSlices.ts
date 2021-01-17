@@ -18,6 +18,7 @@ const dataInitialState: any = {
   selectedCompanyId: -1,
   selectedTeamId: -1,
   selectedProjectId: -1,
+  selectedSprintId: -1,
 };
 const reducers: any = {};
 const extraReducers: any = {};
@@ -58,6 +59,9 @@ const dataSlice = createSlice({
     setSelectedProjectId(state: any, action: PayloadAction<number>) {
       state.selectedProjectId = action.payload;
     },
+    setSelectedSprintId(state: any, action: PayloadAction<number>) {
+      state.selectedSprintId = action.payload;
+    },
   },
   extraReducers: {
     ...extraReducers,
@@ -68,6 +72,7 @@ export const {
   setSelectedCompanyId,
   setSelectedTeamId,
   setSelectedProjectId,
+  setSelectedSprintId,
 } = dataSlice.actions;
 export default dataSlice.reducer;
 
