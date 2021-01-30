@@ -35,10 +35,14 @@ export const projectSprintsSelector = createSelector(state, (s) =>
     : []
 );
 
-export const sprintTasksSelector = createSelector(state, (s) =>
+export const sprintAspectSelector = createSelector(state, (s) =>
   s.data.selectedSprintId !== -1
-    ? s.data.sprints.filter((p) => p.id === s.data.selectedSprintId)[0]
-        .aspects
+    ? s.data.sprints
+        .filter((p) => p.id === s.data.selectedSprintId)[0]
+        .aspects.map((aspect) => s.data.aspects.find((a) => a.id == aspect.id))
     : []
 );
 
+export const userDataSelector = createSelector(state, (s) =>
+  s.data.users.find((user) => user.username === s.user.username)
+);

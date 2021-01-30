@@ -102,7 +102,17 @@ export const getData = createAsyncThunk("getData", async (_, { dispatch }) => {
 export const createNew = createAsyncThunk(
   "createNew",
   async ({ route, data }: { route: string; data: any }, { dispatch }) => {
-    await apiService.post(route, data);
+    const response = await apiService.post(route, data);
+    if (route === "/sprints") {
+      await apiService.post("/aspects", {
+        name: "frontend",
+        sprintId: response.id,
+      });
+      await apiService.post("/aspects", {
+        name: "backend",
+        sprintId: response.id,
+      });
+    }
 
     dispatch(getData());
   }

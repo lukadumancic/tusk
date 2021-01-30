@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import apiService from "../services/ApiService";
 
 const userInitialState: any = {
+  id: null,
   username: "",
   firstName: "",
   lastName: "",
@@ -12,11 +13,23 @@ const userInitialState: any = {
   isLoggedIn: false,
 };
 
+export const getUserData = createAsyncThunk(
+  "getUserData",
+  async (_, { dispatch }) => {
+    const data = await apiService.get("/users/me");
+    dispatch(setUserData(data));
+  }
+);
+
 export const loginUser = createAsyncThunk(
   "loginUser",
   async ({ username, password }: any, { dispatch }) => {
     const data = await apiService.post("/users/login", { username, password });
-    return data;
+    if (data.token) {
+      apiService.setToken(data.token);
+    }
+    dispatch(getUserData());
+    return { ...data, username };
   }
 );
 
@@ -36,15 +49,18 @@ const userSlice = createSlice({
       state.isLoggedIn = false;
     },
     setUserData(state, action: PayloadAction<any>) {
-      state = {
-        ...state,
-        ...action.payload,
-      };
+      state.companyId = action.payload.companyId;
+      state.email = action.payload.email;
+      state.firstName = action.payload.firstName;
+      state.lastName = action.payload.lastName;
+      state.username = action.payload.username;
+      state.id = action.payload.id;
     },
   },
   extraReducers: {
     [loginUser.fulfilled]: (state, action) => {
       state.token = action.payload.token;
+      state.username = action.payload.username;
       state.isLoggedIn = true;
       state.errorLog = "";
     },

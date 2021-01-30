@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/globalStyles";
 
-import { dataSelector } from "../selectors";
+import { dataSelector, userDataSelector, userSelector } from "../selectors";
 import {
   createNew,
   deleteItem,
@@ -16,6 +16,7 @@ export default function Companies() {
   const dispatch = useDispatch();
   const [newCompanyName, setNewCompanyName] = React.useState("");
   const dataState = useSelector(dataSelector);
+  const userData = useSelector(userDataSelector);
 
   const selectCompany = (id: number) => {
     dispatch(setSelectedCompanyId(id));
@@ -47,7 +48,12 @@ export default function Companies() {
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
         <Text style={styles.title}>Companies</Text>
+        {!userData?.companyId && <p>User has no company</p>}
         {dataState.companies.map((company: any) => {
+          if (company.id != userData?.companyId) {
+            return null;
+          }
+          dispatch(setSelectedCompanyId(company.id));
           return (
             <View
               key={company.id}

@@ -8,6 +8,7 @@ import {
   createNew,
   deleteItem,
   editItem,
+  getData,
   getTeamMembers,
   setSelectedTeamId,
 } from "../slices/dataSlices";
@@ -16,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 export default function Teams() {
   const dispatch = useDispatch();
   const [newTeamName, setNewTeamName] = React.useState("");
+  const [newCompanyMember, setNewCompanyMember] = React.useState("");
   const dataState = useSelector(dataSelector);
   const userState = useSelector(userSelector);
   const [newTeamMember, setNewTeamMember] = React.useState(-1);
@@ -49,6 +51,23 @@ export default function Teams() {
     setNewTeamName("");
   };
 
+  const addToCompany = () => {
+    dispatch(
+      editItem({
+        route:
+          "/companies/" +
+          dataState.selectedCompanyId +
+          "/employees/" +
+          newCompanyMember,
+        data: {},
+      })
+    );
+    setTimeout(() => {
+      dispatch(getData());
+    }, 500);
+    setNewCompanyMember("");
+  };
+
   const joinTeam = () => {
     dispatch(
       editItem({
@@ -58,7 +77,7 @@ export default function Teams() {
       })
     );
     setTimeout(() => {
-      dispatch(getTeamMembers(id));
+      dispatch(getTeamMembers(dataState.selectedTeamId));
     }, 500);
     setNewTeamName("");
   };
@@ -147,23 +166,55 @@ export default function Teams() {
             <Text style={{ color: "#FFF" }}>Create</Text>
           </Pressable>
         </View>
+        <Text style={styles.title}>Add user to company</Text>
+        <View style={styles.input}>
+          <Picker
+            selectedValue={newCompanyMember}
+            style={{ height: 50, width: 100 }}
+            onValueChange={(itemValue) => {
+              setNewCompanyMember(itemValue);
+            }}
+          >
+            <Picker.Item label="select user" value={-1} />
+            {dataState.users
+              .filter((user) => !user.companyId)
+              .map((user, index) => {
+                return <Picker.Item label={user.username} value={user.id} />;
+              })}
+          </Picker>
+          <Pressable style={styles.inputButton} onPress={() => addToCompany()}>
+            <Text style={{ color: "#FFF" }}>Add</Text>
+          </Pressable>
+        </View>
       </ScrollView>
       {modalVisible && (
         <View style={styles.centeredView}>
           <View transparent={true} visible={modalVisible}>
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <Text style={styles.modalText}>Create new task</Text>
+                <Text style={styles.modalText}>Select user to add</Text>
                 <View style={styles.input}>
                   <Picker
                     selectedValue={newTeamMember}
                     style={{ height: 50, width: 100 }}
-                    onValueChange={(itemValue) => setNewTeamMember(itemValue)}
+                    onValueChange={(itemValue) => {
+                      console.log(itemValue);
+                      setNewTeamMember(itemValue);
+                    }}
                   >
-                    {dataState.users.map((user) => (
-                      <Picker.Item label={user.username} value={user.id} />
-                    ))}
+                    <Picker.Item label="select user" value={-1} />
+                    {dataState.users
+                      .filter(
+                        (user) => user.companyId == dataState.selectedCompanyId
+                      )
+                      .map((user, index) => {
+                        return (
+                          <Picker.Item label={user.username} value={user.id} />
+                        );
+                      })}
                   </Picker>
+                </View>
+                <View style={styles.input}>
                   <Pressable
                     style={styles.inputButton}
                     onPress={() => joinTeam()}
@@ -179,6 +230,7 @@ export default function Teams() {
                     height: 40,
                     justifyContent: "center",
                     borderRadius: 8,
+                    padding: 8,
                   }}
                   onPress={() => {
                     setModalVisible(!modalVisible);

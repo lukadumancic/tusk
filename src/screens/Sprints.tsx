@@ -14,7 +14,7 @@ import { Picker } from "@react-native-picker/picker";
 import {
   dataSelector,
   projectSprintsSelector,
-  sprintTasksSelector,
+  sprintAspectSelector,
   userSelector,
 } from "../selectors";
 import {
@@ -27,16 +27,19 @@ import {
 export default function Sprints() {
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [newSprintTitle, setNewSprintTitle] = React.useState("");
+  const [newSprintName, setNewSprintName] = React.useState("");
   const [newSprintDescription, setNewSprintDescription] = React.useState("");
-  const [newTaskTitle, setNewTaskTitle] = React.useState("");
+  const [newTaskName, setNewTaskName] = React.useState("");
   const [newTaskDescription, setNewTaskDescription] = React.useState("");
   const [newComment, setNewComment] = React.useState("");
   const dataState = useSelector(dataSelector);
   const userState = useSelector(userSelector);
   const sprints = useSelector(projectSprintsSelector);
-  const tasks = useSelector(sprintTasksSelector);
+  const aspects = useSelector(sprintAspectSelector);
+  const [selectedAspectId, setSelectedAspectId] = React.useState(-1);
   const [selectedAspect, setSelectedAspect] = React.useState("");
+
+  console.log({ aspects });
 
   const selectSprint = (id: number) => {
     dispatch(setSelectedSprintId(id));
@@ -49,59 +52,40 @@ export default function Sprints() {
         data: {
           content: newComment,
           taskId,
-          userId: userState
-        }}
-      )
-    )
-  }
+          userId: userState.id,
+        },
+      })
+    );
+  };
 
   const createSprint = () => {
     dispatch(
       createNew({
         route: "/sprints",
         data: {
-          title: newSprintTitle,
+          name: newSprintName,
           description: newSprintDescription,
           projectId: dataState.selectedProjectId,
         },
       })
     );
-    setNewSprintTitle("");
+    setNewSprintName("");
     setNewSprintDescription("");
   };
 
   const createTask = () => {
-    const sprintIndex = dataState.sprints.findIndex(
-      (s) => s.id === dataState.selectedSprintId
+    dispatch(
+      createNew({
+        route: "/tasks",
+        data: {
+          aspectId: selectedAspectId,
+          title: newTaskName,
+          description: newTaskDescription,
+        },
+      })
     );
-    const sprint = dataState.sprints[sprintIndex];
-    let timeout = 0;
-    if (sprint.aspects.length === 0) {
-      dispatch(
-        createNew({
-          route: "/aspects",
-          data: {
-            sprintId: dataState.selectedSprintId,
-          },
-        })
-      );
-      timeout = 5000;
-    }
-    setTimeout(() => {
-      const aspectId = dataState.sprints[sprintIndex].aspects[0].id;
-      dispatch(
-        createNew({
-          route: "/tasks",
-          data: {
-            aspectId,
-            title: newTaskTitle,
-            description: newTaskDescription,
-          },
-        })
-      );
-      setNewTaskDescription("");
-      setNewTaskTitle("");
-    }, timeout);
+    setNewTaskDescription("");
+    setNewTaskName("");
   };
 
   const deleteSprint = (id: number) => {
@@ -113,19 +97,19 @@ export default function Sprints() {
       editItem({
         route: "/sprints/" + id,
         data: {
-          title: newSprintTitle,
+          name: newSprintName,
           description: newSprintDescription,
         },
       })
     );
-    setNewSprintTitle("");
+    setNewSprintName("");
     setNewSprintDescription("");
   };
 
   return (
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
-        <Text style={styles.title}>Sprints</Text>
+        <Text style={styles.name}>Sprints</Text>
         {sprints.map((sprint: any) => {
           return (
             <>
@@ -169,41 +153,56 @@ export default function Sprints() {
               </View>
               {sprint.id === dataState.selectedSprintId && (
                 <View>
-                  {tasks.map((task) => (
+                  {aspects.map((aspect) => (
                     <View>
-                      <View>
-                        <Text>{task.title}</Text>
-                        <Text>{task.description}</Text>
-                      </View>
-                      {task.comments.map((comment) => (
-                        <View>
-                          <Text>{comment.text}</Text>
-                          <Text>{comment.createdAt.toString()}</Text>
-                          <Text>{comment.user.username}</Text>
-                        </View>
-                      ))}
-                      <View style={styles.input}>
-                        <TextInput
-                          placeholder="Comment"
-                          style={styles.inputText}
-                          onChangeText={(text) => setNewComment(text)}
-                        />
-                        <Pressable
-                          style={styles.inputButton}
-                          onPress={() => createComment()}
-                        >
-                          <Text style={{ color: "#FFF" }}>Create</Text>
-                        </Pressable>
-                      </View>
+                      <Text style={styles.title}>{aspect.name}</Text>
+                      {aspect.tasks.map((task) => {
+                        task = dataState.tasks.find((t) => t.id === task.id);
+                        return (
+                          <View>
+                            <View>
+                              <Text>{task.name}</Text>
+                              <Text>{task.description}</Text>
+                            </View>
+                            {task.comments.map((comment) => (
+                              <View>
+                                <Text>{comment.text}</Text>
+                                <Text>{comment.createdAt.toString()}</Text>
+                                <Text>{comment.user.username}</Text>
+                              </View>
+                            ))}
+                            <View style={styles.input}>
+                              <TextInput
+                                placeholder="Comment"
+                                style={styles.inputText}
+                                onChangeText={(text) => setNewComment(text)}
+                              />
+                              <Pressable
+                                style={styles.inputButton}
+                                onPress={() => comment(task.id)}
+                              >
+                                <Text style={{ color: "#FFF" }}>Comment</Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        )
+                      })}
+                      <Pressable
+                        style={[
+                          styles.inputButton,
+                          { marginTop: 8, height: 40 },
+                        ]}
+                        onPress={() => {
+                          setSelectedAspectId(aspect.id);
+                          setModalVisible(true);
+                        }}
+                      >
+                        <Text style={{ color: "#FFF" }}>
+                          Create task for {aspect.name}
+                        </Text>
+                      </Pressable>
                     </View>
                   ))}
-
-                  <Pressable
-                    style={[styles.inputButton, { marginTop: 8, height: 40 }]}
-                    onPress={() => setModalVisible(true)}
-                  >
-                    <Text style={{ color: "#FFF" }}>Create task</Text>
-                  </Pressable>
                 </View>
               )}
             </>
@@ -211,9 +210,9 @@ export default function Sprints() {
         })}
         <View style={styles.input}>
           <TextInput
-            placeholder="Sprint title"
+            placeholder="Sprint name"
             style={styles.inputText}
-            onChangeText={(text) => setNewSprintTitle(text)}
+            onChangeText={(text) => setNewSprintName(text)}
           />
           <Pressable style={styles.inputButton} onPress={createSprint}>
             <Text style={{ color: "#FFF" }}>Create</Text>
@@ -235,9 +234,9 @@ export default function Sprints() {
                 <Text style={styles.modalText}>Create new task</Text>
                 <View style={styles.input}>
                   <TextInput
-                    placeholder="Task title"
+                    placeholder="Task name"
                     style={styles.inputText}
-                    onChangeText={(text) => setNewTaskTitle(text)}
+                    onChangeText={(text) => setNewTaskName(text)}
                   />
                   <Pressable style={styles.inputButton} onPress={createTask}>
                     <Text style={{ color: "#FFF" }}>Create</Text>
