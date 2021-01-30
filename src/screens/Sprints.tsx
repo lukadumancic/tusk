@@ -106,6 +106,18 @@ export default function Sprints() {
     setNewSprintDescription("");
   };
 
+  const toggleIsDone = (id: number) => {
+    dispatch(
+      createNew({
+        route: "/tasks/" + id + "/changeStatus",
+        data: {
+          name: newSprintName,
+          description: newSprintDescription,
+        },
+      })
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
@@ -129,7 +141,7 @@ export default function Sprints() {
                   style={{ flex: 10 }}
                   onPress={() => selectSprint(sprint.id)}
                 >
-                  <Text style={styles.itemText}>{"Sprint " + sprint.id}</Text>
+                  <Text style={styles.itemText}>{sprint.name}</Text>
                   <Text style={styles.itemSubtext}>{sprint.description}</Text>
                 </Pressable>
                 <Pressable
@@ -160,14 +172,32 @@ export default function Sprints() {
                         task = dataState.tasks.find((t) => t.id === task.id);
                         return (
                           <View>
-                            <View>
-                              <Text>{task.name}</Text>
-                              <Text>{task.description}</Text>
-                            </View>
+                            <Pressable onPress={() => toggleIsDone(task.id)}>
+                              <View
+                                style={{
+                                  textDecoration: task.isDone
+                                    ? "line-through"
+                                    : "none",
+                                }}
+                              >
+                                <Text>{task.title}</Text>
+                                <Text>{task.description}</Text>
+                              </View>
+                            </Pressable>
                             {task.comments.map((comment) => (
-                              <View>
-                                <Text>{comment.text}</Text>
-                                <Text>{comment.createdAt.toString()}</Text>
+                              <View
+                                style={{
+                                  paddingTop: 4,
+                                  borderWidth: 1,
+                                  borderColor: "#000",
+                                }}
+                              >
+                                <Text>{comment.content}</Text>
+                                <Text>
+                                  {new Date(
+                                    comment.createdAt
+                                  ).toLocaleDateString("en-US")}
+                                </Text>
                                 <Text>{comment.user.username}</Text>
                               </View>
                             ))}
@@ -185,7 +215,7 @@ export default function Sprints() {
                               </Pressable>
                             </View>
                           </View>
-                        )
+                        );
                       })}
                       <Pressable
                         style={[

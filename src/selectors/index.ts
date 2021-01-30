@@ -38,8 +38,16 @@ export const projectSprintsSelector = createSelector(state, (s) =>
 export const sprintAspectSelector = createSelector(state, (s) =>
   s.data.selectedSprintId !== -1
     ? s.data.sprints
-        .filter((p) => p.id === s.data.selectedSprintId)[0]
-        .aspects.map((aspect) => s.data.aspects.find((a) => a.id == aspect.id))
+        .find((p) => p.id === s.data.selectedSprintId)
+        .aspects.map((aspect) => {
+          const asp = JSON.parse(
+            JSON.stringify(s.data.aspects.find((a) => a.id == aspect.id))
+          );
+          asp.tasks = asp.tasks
+            .map((t) => s.data.tasks.find((task) => task.id === t.id))
+            .filter((x) => x);
+          return asp;
+        })
     : []
 );
 
