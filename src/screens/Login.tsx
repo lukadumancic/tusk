@@ -46,7 +46,9 @@ export default function Login() {
           value={password}
         />
       </View>
-      {state.errorLog && <Text style={{ color: "red" }}>{state.errorLog}</Text>}
+      {state.errorLog ? (
+        <Text style={{ color: "red" }}>{state.errorLog}</Text>
+      ) : null}
       <View style={globalStyle.input}>
         <Pressable
           onPress={login}

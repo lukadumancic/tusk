@@ -72,7 +72,9 @@ export default function Register() {
           value={lastName}
         />
       </View>
-      {state.errorReg && <Text style={{ color: "red" }}>{state.errorReg}</Text>}
+      {state.errorReg ? (
+        <Text style={{ color: "red" }}>{state.errorReg}</Text>
+      ) : null}
       <View style={globalStyle.input}>
         <Pressable
           onPress={register}

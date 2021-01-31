@@ -48,7 +48,7 @@ export default function Companies() {
     <View style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
         <Text style={styles.title}>Companies</Text>
-        {!userData?.companyId && <p>User has no company</p>}
+        {!userData?.companyId && <Text>User has no company</Text>}
         {dataState.companies.map((company: any) => {
           if (company.id != userData?.companyId) {
             return null;
